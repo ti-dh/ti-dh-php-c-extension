@@ -95,7 +95,7 @@ PHP_FUNCTION( dh_compute_pga )
   // 随机一个server_number
   mpz_t server_number;
   mpz_init( server_number );
-  int   oc_server_number;
+  int oc_server_number;
   srand( time( NULL ) );
   oc_server_number = rand();
   mpz_set_ui( server_number, oc_server_number );
@@ -103,8 +103,6 @@ PHP_FUNCTION( dh_compute_pga )
   mpz_t processed_server_number;
   mpz_init( processed_server_number );
   mpz_powm( processed_server_number, g, server_number, p ); 
-  //gmp_printf( "p ：%Zd\n", p );
-  //gmp_printf( "g ：%Zd\n", g );
   //gmp_printf( "a ：%Zd\n", processed_server_number );
   // 构造返回
   char * p_str = mpz_get_str( NULL, 10, p ); 
@@ -116,6 +114,11 @@ PHP_FUNCTION( dh_compute_pga )
   add_assoc_string( return_value, "g", g_str );
   add_assoc_string( return_value, "server_num", a_str );
   add_assoc_string( return_value, "processed_server_num", A_str );
+  // 释放内存
+  mpz_clear( p ); 
+  mpz_clear( g ); 
+  mpz_clear( server_number ); 
+  mpz_clear( processed_server_number ); 
 	//RETURN_STR( strg );
 }
 
@@ -148,12 +151,14 @@ PHP_FUNCTION( dh_compute_key )
   mpz_init_set_str( a, a_str, 10 );
   mpz_init_set_str( client_num, client_num_str, 10 );
   //gmp_printf( "p ：%Zd\n", p );
-  //gmp_printf( "a ：%Zd\n", a );
-  //gmp_printf( "client ：%Zd\n", client_num );
   // key = B^a mod p
   mpz_powm( key, client_num, a, p ); 
   char * key_str = mpz_get_str( NULL, 10, key ); 
-  //printf( "key : %s\n", key_str );
+  // 释放内存
+  mpz_clear( p );
+  mpz_clear( a );
+  mpz_clear( key );
+  mpz_clear( client_num );
 	RETURN_STRING( key_str );
 }
 
