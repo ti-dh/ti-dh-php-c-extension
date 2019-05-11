@@ -1,5 +1,5 @@
 # ti-dh-php-c-extension
-C语言扩展版本的PHP DH库
+C语言扩展版本的PHP DH库，对PHP版本要求为>=7.0
 
 ## API说明：
 
