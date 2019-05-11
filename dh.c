@@ -58,9 +58,9 @@ PHP_INI_END()
    Return a string to confirm that the module is compiled in */
 
 
-PHP_FUNCTION( dh_compute_pga )
+PHP_FUNCTION( dh_init )
 {
-	//zend_string *strg;
+  //zend_string *strg;
   //strg = strpprintf( 0, "dh compute pga." );
   // 计算P
   char * p_source = "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF"; 
@@ -112,53 +112,53 @@ PHP_FUNCTION( dh_compute_pga )
   array_init( return_value );
   add_assoc_string( return_value, "p", p_str );
   add_assoc_string( return_value, "g", g_str );
-  add_assoc_string( return_value, "server_num", a_str );
-  add_assoc_string( return_value, "processed_server_num", A_str );
+  add_assoc_string( return_value, "server_number", a_str );
+  add_assoc_string( return_value, "processed_server_number", A_str );
   // 释放内存
   mpz_clear( p ); 
   mpz_clear( g ); 
   mpz_clear( server_number ); 
   mpz_clear( processed_server_number ); 
-	//RETURN_STR( strg );
+  //RETURN_STR( strg );
 }
 
 /*
  * @desc : 计算出key
  */
-PHP_FUNCTION( dh_compute_key )
+PHP_FUNCTION( dh_compute_share_key )
 {
 	char * p_str;                //p
 	size_t p_str_len;            //p
-	char * a_str;                //a
-	size_t a_str_len;            //a
-	char * client_num_str;       //B
-	size_t client_num_str_len;   //B
-  //strg = strpprintf( 0, "dh compute key." );
-  ZEND_PARSE_PARAMETERS_START( 3, 3 )
-    Z_PARAM_STRING( p_str, p_str_len )
-    Z_PARAM_STRING( a_str, a_str_len )
+	char * a_str;                // server_number
+	size_t a_str_len;            // server_number length
+	char * client_num_str;       // client_number
+	size_t client_num_str_len;   // client_number length
+    //strg = strpprintf( 0, "dh compute key." );
+    ZEND_PARSE_PARAMETERS_START( 3, 3 )
     Z_PARAM_STRING( client_num_str, client_num_str_len )
-  ZEND_PARSE_PARAMETERS_END();
+    Z_PARAM_STRING( a_str, a_str_len )
+    Z_PARAM_STRING( p_str, p_str_len )
+    ZEND_PARSE_PARAMETERS_END();
 
-  // client_num有了，p和g也有，开始计算
-  mpz_t key, client_num, p, a;
-  mpz_init( client_num );
-  mpz_init( p );
-  mpz_init( a );
-  mpz_init( key ); 
-  // 给client_num p a数值
-  mpz_init_set_str( p, p_str, 10 );
-  mpz_init_set_str( a, a_str, 10 );
-  mpz_init_set_str( client_num, client_num_str, 10 );
-  //gmp_printf( "p ：%Zd\n", p );
-  // key = B^a mod p
-  mpz_powm( key, client_num, a, p ); 
-  char * key_str = mpz_get_str( NULL, 10, key ); 
-  // 释放内存
-  mpz_clear( p );
-  mpz_clear( a );
-  mpz_clear( key );
-  mpz_clear( client_num );
+    // client_num有了，p和g也有，开始计算
+    mpz_t key, client_num, p, a;
+    mpz_init( client_num );
+    mpz_init( p );
+    mpz_init( a );
+    mpz_init( key ); 
+    // 给client_num p a数值
+    mpz_init_set_str( p, p_str, 10 );
+    mpz_init_set_str( a, a_str, 10 );
+    mpz_init_set_str( client_num, client_num_str, 10 );
+    //gmp_printf( "p ：%Zd\n", p );
+    // key = B^a mod p
+    mpz_powm( key, client_num, a, p ); 
+    char * key_str = mpz_get_str( NULL, 10, key ); 
+    // 释放内存
+    mpz_clear( p );
+    mpz_clear( a );
+    mpz_clear( key );
+    mpz_clear( client_num );
 	RETURN_STRING( key_str );
 }
 
@@ -243,8 +243,8 @@ PHP_MINFO_FUNCTION(dh)
  * Every user visible function must have an entry in dh_functions[].
  */
 const zend_function_entry dh_functions[] = {
-	PHP_FE( dh_compute_pga, NULL )		/* For testing, remove later. */
-  PHP_FE( dh_compute_key, NULL )
+	PHP_FE( dh_init, NULL )		/* For testing, remove later. */
+    PHP_FE( dh_compute_share_key, NULL )
 	PHP_FE_END	/* Must be the last line in dh_functions[] */
 };
 /* }}} */
