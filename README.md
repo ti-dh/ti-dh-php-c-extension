@@ -5,6 +5,7 @@ C语言扩展版本的PHP DH库，对PHP版本要求为>=7.0
 
 ### dh_init()函数
 参数：无需任何参数
+
 返回：PHP Array
 
 | 字段 | 含义 |
@@ -17,6 +18,7 @@ C语言扩展版本的PHP DH库，对PHP版本要求为>=7.0
 
 ### dh\_compute\_share\_key()函数
 原型：string dh\_compute\_share\_key( string client_number, string server_number, string p )
+
 参数：
 
 | 字段 | 含义 |
