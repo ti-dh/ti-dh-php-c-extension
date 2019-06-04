@@ -230,6 +230,8 @@ PHP_MINFO_FUNCTION(dh)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "dh support", "enabled");
+        php_info_print_table_header(2, "dh version", "1.0.0");
+        php_info_print_table_header(2, "dh author", "Chick LU | 42677833@qq.com");
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
